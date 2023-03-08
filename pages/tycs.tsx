@@ -7,7 +7,7 @@ import Head from "next/head";
 // Por ahora estamos utilizando data mockeada, pero
 // debemos reemplazar esto por información proveniente de la
 // API
-export const data: TyCsAPIResponse = {
+/*export const data: TyCsAPIResponse = {
   version: "3 de julio, 2022",
   tycs: [
     {
@@ -19,11 +19,18 @@ export const data: TyCsAPIResponse = {
     },
   ],
 };
+*/
+interface Props {
+  data: {
+    version: string;
+    tycs: TyC[];
+  };
+}
 
-const TerminosYCondiciones: NextPage = () => {
+const TerminosYCondiciones: NextPage = (data) => {
   if (!data) return null;
 
-  const { version, tycs } = data;
+  const { version, tycs } = data.data;
 
   const renderTyc: (tyc: TyC) => JSX.Element = ({ id, description, title }) => (
     <div key={id}>
@@ -50,5 +57,14 @@ const TerminosYCondiciones: NextPage = () => {
 
 // Aquí debemos agregar el método para obtener la información
 // de la API
+
+export async function getStaticProps() {
+  const res = await fetch("https://ef-3-c9-integracion.vercel.app/api/tycs");
+  const data = await res.json();
+
+  return {
+    props: { data },
+  };
+}
 
 export default TerminosYCondiciones;

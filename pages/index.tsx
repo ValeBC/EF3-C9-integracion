@@ -1,12 +1,14 @@
 import type { NextPage } from "next";
 import Head from "next/head";
 import Image from "next/image";
+import { networkInterfaces } from "os";
 import styles from "../styles/Home.module.css";
 import { Product, ProductsAPIResponse } from "../types";
 
 // Por ahora estamos utilizando data mockeada, pero
 // debemos reemplazar esto por información proveniente de la
 // API
+/*
 export const data: ProductsAPIResponse = [
   {
     id: 1,
@@ -18,8 +20,13 @@ export const data: ProductsAPIResponse = [
     rating: 4,
   },
 ];
+*/
 
-const Home: NextPage = () => {
+interface Props { 
+  data: Product[];
+}
+
+const Home: NextPage = (data) => {
   if (!data) return null;
 
   const formatPrice: (price: number) => string = (price) =>
@@ -78,7 +85,7 @@ const Home: NextPage = () => {
       </Head>
       <main className={styles.main}>
         <h1>Productos destacados</h1>
-        <div className={styles.grid}>{data.map(renderProductCard)}</div>
+        <div className={styles.grid}>{data.data.map(renderProductCard)}</div>
       </main>
       <footer className={styles.footer}>
         <span>Powered by</span>
@@ -97,5 +104,18 @@ const Home: NextPage = () => {
 
 // Aquí debemos agregar el método para obtener la información
 // de la API
+
+export const getServerSideProps = async () => {
+  const res = await fetch(
+    "https://ef-3-c9-integracion.vercel.app/api/products"
+  );
+  const data = await res.json();
+
+  return {
+    props: {
+      data,
+    },
+  };
+};
 
 export default Home;
